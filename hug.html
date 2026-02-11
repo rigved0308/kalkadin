@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hug Day — A Hug Saved For You</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Pacifico&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --rose:#ff7a9e;
+      --rose-soft:#ffc7d8;
+      --rose-strong:#ff4a86;
+      --peach:#ffb38a;
+      --mint:#7de9c2;
+      --bg1:#fff7fb;
+      --bg2:#ffe4ef;
+      --bg3:#ffe6d7;
+      --text-main:#3f304c;
+      --text-soft:#7d6b8b;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;}
+
+    body{
+      min-height:100vh;
+      font-family:Quicksand,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255,194,209,.6), transparent 55%),
+        radial-gradient(circle at 90% 100%, rgba(255,212,186,.6), transparent 55%),
+        linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+      color:var(--text-main);
+      overflow-x:hidden;
+    }
+
+    /* floating hearts */
+    .floatHeart{
+      position:fixed;
+      font-size:28px;
+      opacity:.16;
+      pointer-events:none;
+      animation:float 26s linear infinite;
+      z-index:0;
+      filter:drop-shadow(0 0 8px rgba(255,122,158,.65));
+    }
+    @keyframes float{
+      0%{transform:translateY(110vh) translateX(0) scale(.8);opacity:0;}
+      10%{opacity:.18;}
+      50%{transform:translateY(55vh) translateX(60px) scale(1.2);}
+      90%{opacity:.18;}
+      100%{transform:translateY(-20vh) translateX(-40px) scale(1);opacity:0;}
+    }
+
+    .wrapper{
+      position:relative;
+      z-index:1;
+      max-width:960px;
+      margin:0 auto;
+      padding:30px 16px 44px;
+      animation:fadeIn 0.9s ease-out forwards;
+    }
+    @keyframes fadeIn{
+      from{opacity:0;transform:translateY(20px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    header{
+      text-align:center;
+      margin-bottom:26px;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,122,158,.35);
+      background:rgba(255,255,255,.8);
+      font-size:.76rem;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:var(--text-soft);
+      margin-bottom:6px;
+      box-shadow:0 8px 20px rgba(255,122,158,.25);
+    }
+    .chip span{
+      width:6px;height:6px;border-radius:50%;
+      background:var(--rose-strong);
+      box-shadow:0 0 10px rgba(255,74,134,.7);
+    }
+
+    h1{
+      font-family:"Playfair Display",serif;
+      font-weight:600;
+      font-size:clamp(2.2rem,5.2vw,3.2rem);
+      color:#43235d;
+      margin-bottom:4px;
+    }
+
+    .subtitle{
+      font-family:"Playfair Display",serif;
+      font-size:.98rem;
+      color:var(--text-soft);
+      max-width:520px;
+      margin:0 auto;
+    }
+
+    .date{
+      margin-top:6px;
+      font-size:.8rem;
+      text-transform:uppercase;
+      letter-spacing:.2em;
+      color:#aa7aa8;
+    }
+
+    /* layout */
+    .gridMain{
+      display:grid;
+      grid-template-columns:minmax(0,1.05fr) minmax(0,1.5fr);
+      gap:28px;
+      margin-top:28px;
+      align-items:stretch;
+    }
+    @media(max-width:780px){
+      .gridMain{grid-template-columns:1fr;}
+    }
+
+    .card{
+      border-radius:26px;
+      background:rgba(255,255,255,.92);
+      border:1.5px solid rgba(255,122,158,.25);
+      box-shadow:
+        0 18px 40px rgba(255,122,158,.3),
+        0 0 30px rgba(255,255,255,.8);
+      padding:22px 20px 20px;
+      position:relative;
+      overflow:hidden;
+    }
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background:
+        radial-gradient(circle at 0 0,rgba(255,255,255,.4),transparent 55%),
+        radial-gradient(circle at 100% 100%,rgba(255,212,186,.4),transparent 55%);
+      opacity:.6;
+      pointer-events:none;
+    }
+    .cardInner{position:relative;z-index:1;}
+
+    /* LEFT: big hug heart */
+    .label{
+      font-size:.78rem;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--text-soft);
+      margin-bottom:10px;
+    }
+
+    .hugCircle{
+      position:relative;
+      width:220px;
+      height:220px;
+      margin:4px auto 0;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:radial-gradient(circle at 30% 20%,#ffe7f1 0,#ffb4cf 42%,#ff7a9e 70%,#ff4a86 100%);
+      box-shadow:
+        0 0 34px rgba(255,122,158,.85),
+        0 18px 40px rgba(208,109,151,.6);
+      cursor:pointer;
+      overflow:hidden;
+      animation:breath 2.2s ease-in-out infinite;
+    }
+    @keyframes breath{
+      0%,100%{transform:scale(1);}
+      50%{transform:scale(1.04);}
+    }
+
+    .hugRing{
+      position:absolute;
+      inset:18px;
+      border-radius:50%;
+      border:2px dashed rgba(255,255,255,.8);
+      box-shadow:0 0 16px rgba(255,255,255,.55);
+      animation:ringSpin 16s linear infinite;
+    }
+    @keyframes ringSpin{
+      from{transform:rotate(0deg);}
+      to{transform:rotate(360deg);}
+    }
+
+    .hugEmoji{
+      position:relative;
+      font-size:64px;
+      filter:drop-shadow(0 6px 14px rgba(0,0,0,.4));
+      transform-origin:center;
+      transition:transform .3s ease;
+    }
+
+    .meter{
+      margin-top:18px;
+      width:100%;
+      height:9px;
+      border-radius:999px;
+      background:rgba(255,122,158,.18);
+      overflow:hidden;
+    }
+    .meterFill{
+      width:0%;
+      height:100%;
+      border-radius:inherit;
+      background:linear-gradient(90deg,#ffcfdf,#ff9fb6,#ff7a9e,#ffb38a,#7de9c2);
+      box-shadow:0 0 16px rgba(255,122,158,.7);
+      transition:width .08s linear;
+    }
+
+    .hugStatus{
+      margin-top:10px;
+      text-align:center;
+      font-size:.9rem;
+      color:#c05b88;
+      min-height:22px;
+    }
+    .hugCount{
+      margin-top:2px;
+      text-align:center;
+      font-size:.8rem;
+      color:var(--text-soft);
+    }
+
+    .hint{
+      margin-top:8px;
+      text-align:center;
+      font-size:.86rem;
+      color:var(--text-soft);
+    }
+
+    /* RIGHT: letter */
+    .titleRight{
+      font-family:"Playfair Display",serif;
+      font-size:1.5rem;
+      color:#5a287b;
+      margin-bottom:6px;
+    }
+    .tagline{
+      font-size:.9rem;
+      color:#c15c85;
+      margin-bottom:14px;
+    }
+    .p{
+      font-family:"Playfair Display",serif;
+      font-size:.97rem;
+      line-height:1.9;
+      color:#4b3d54;
+      margin-bottom:12px;
+    }
+    .p span{
+      color:#e0588f;
+      font-weight:600;
+    }
+    .sig{
+      margin-top:10px;
+      padding-top:10px;
+      border-top:1px dashed rgba(255,122,158,.4);
+      text-align:right;
+      font-family:"Pacifico",cursive;
+      font-size:1.05rem;
+      color:#e0588f;
+    }
+
+    /* SECOND ROW: slider + mood buttons */
+    .row2{
+      margin-top:26px;
+      display:grid;
+      grid-template-columns:minmax(0,1.3fr) minmax(0,1.2fr);
+      gap:22px;
+    }
+    @media(max-width:780px){
+      .row2{grid-template-columns:1fr;}
+    }
+
+    .sliderTitle{
+      font-family:"Playfair Display",serif;
+      font-size:1.25rem;
+      color:#5a287b;
+      margin-bottom:4px;
+    }
+    .sliderSub{
+      font-size:.9rem;
+      color:var(--text-soft);
+      margin-bottom:14px;
+    }
+    .rangeRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    input[type=range]{
+      -webkit-appearance:none;
+      appearance:none;
+      width:100%;
+      height:8px;
+      border-radius:999px;
+      background:rgba(255,122,158,.3);
+      outline:none;
+      cursor:pointer;
+    }
+    input[type=range]::-webkit-slider-thumb{
+      -webkit-appearance:none;
+      appearance:none;
+      width:20px;height:20px;
+      border-radius:50%;
+      background:#fff;
+      border:2px solid var(--rose-strong);
+      box-shadow:0 0 10px rgba(255,74,134,.7);
+    }
+    input[type=range]::-moz-range-thumb{
+      width:18px;height:18px;border-radius:50%;
+      background:#fff;border:2px solid var(--rose-strong);
+      box-shadow:0 0 10px rgba(255,74,134,.7);
+    }
+    .levelChip{
+      min-width:56px;
+      text-align:center;
+      border-radius:999px;
+      padding:4px 8px;
+      background:rgba(255,255,255,.9);
+      border:1px solid rgba(255,122,158,.4);
+      font-size:.8rem;
+      color:#c05b88;
+      font-weight:600;
+    }
+    .sliderText{
+      font-size:.9rem;
+      color:#5d4a6b;
+      min-height:36px;
+    }
+
+    .moodTitle{
+      font-family:"Playfair Display",serif;
+      font-size:1.2rem;
+      color:#5a287b;
+      margin-bottom:6px;
+    }
+    .moodSub{
+      font-size:.9rem;
+      color:var(--text-soft);
+      margin-bottom:10px;
+    }
+    .moodBtns{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-bottom:12px;
+    }
+    .moodBtn{
+      border-radius:999px;
+      border:1px solid rgba(255,122,158,.35);
+      background:rgba(255,255,255,.9);
+      font-size:.8rem;
+      padding:5px 12px;
+      cursor:pointer;
+      color:#b15480;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      transition:all .2s ease;
+    }
+    .moodBtn.active,
+    .moodBtn:hover{
+      background:linear-gradient(135deg,#ffdfec,#ffd1e5);
+      border-color:var(--rose-strong);
+      box-shadow:0 0 16px rgba(255,122,158,.5);
+      transform:translateY(-1px);
+    }
+    .moodDisplay{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .moodEmoji{
+      font-size:1.6rem;
+      filter:drop-shadow(0 4px 10px rgba(0,0,0,.25));
+      transition:transform .25s ease;
+    }
+    .moodTitleText{
+      font-size:.95rem;
+      font-weight:600;
+      color:#c05b88;
+      margin-bottom:2px;
+    }
+    .moodText{
+      font-size:.88rem;
+      color:#5d4a6b;
+      line-height:1.6;
+    }
+
+    footer{
+      margin-top:30px;
+      text-align:center;
+      font-size:.86rem;
+      color:#7f6c8c;
+    }
+    footer span{color:#e0588f;font-weight:600;}
+  </style>
+</head>
+<body>
+  <!-- background hearts -->
+  <div class="floatHeart" style="left:6%;animation-delay:0s;">🤍</div>
+  <div class="floatHeart" style="left:24%;animation-delay:6s;">💕</div>
+  <div class="floatHeart" style="left:52%;animation-delay:12s;">💗</div>
+  <div class="floatHeart" style="left:78%;animation-delay:18s;">💞</div>
+  <div class="floatHeart" style="left:92%;animation-delay:22s;">💖</div>
+
+  <div class="wrapper">
+    <header>
+      <div class="chip"><span></span> Hug Day · Virtual Hug Room</div>
+      <h1>For every hug I still owe you</h1>
+      <p class="subtitle">
+        Hug Day on 12 February is meant to be about arms and warmth, but for us it is also about patience —
+        holding on to the belief that one day my favourite routine will be coming home to your hug.[web:642]
+      </p>
+      <div class="date">Hug Day · 12 February 2026</div>
+    </header>
+
+    <!-- MAIN GRID -->
+    <section class="gridMain">
+      <!-- LEFT: interactive heart -->
+      <div class="card">
+        <div class="cardInner">
+          <div class="label">Press & hold to collect today’s hug</div>
+
+          <div class="hugCircle" id="hugCircle">
+            <div class="hugRing"></div>
+            <div class="hugEmoji" id="hugEmoji">🤍</div>
+          </div>
+
+          <div class="meter">
+            <div class="meterFill" id="meterFill"></div>
+          </div>
+
+          <p class="hugStatus" id="hugStatus"></p>
+          <p class="hugCount" id="hugCount"></p>
+          <p class="hint">
+            Let the circle fill completely. When it reaches the end, close your eyes for a second
+            and pretend you are exactly where you belong — in my arms.
+          </p>
+        </div>
+      </div>
+
+      <!-- RIGHT: letter -->
+      <div class="card">
+        <div class="cardInner">
+          <h2 class="titleRight">A hug I am saving just for you</h2>
+          <p class="tagline">
+            If distance gets to steal real hugs from us for a while, then I get to send you this one in advance.
+          </p>
+
+          <p class="p">
+            Happy Hug Day, my love.  
+            When I imagine the future, it never starts with big celebrations — it starts with something small:
+            you walking through the door, dropping your bag, and falling into my arms like that is the only place
+            your body trusts to rest.
+          </p>
+
+          <p class="p">
+            Tonight we are not in the same room, but my mind keeps replaying the same scene:
+            your head on my chest, my chin on your hair, the silence between us saying all the things
+            words never manage to say. Every time you open this page, I want you to feel a tiny echo
+            of that moment, like a bookmark in time waiting for us to catch up to it.
+          </p>
+
+          <p class="p">
+            Until the day I can hug you for real and refuse to let go,
+            think of this place as proof that <span>I am already choosing that future with you</span>.
+            No matter how far we are, there is a version of me standing right behind you,
+            arms open, waiting for you to turn around.
+          </p>
+
+          <div class="sig">All my hugs are already yours</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECOND ROW -->
+    <section class="row2">
+      <!-- Hug intensity slider -->
+      <div class="card">
+        <div class="cardInner">
+          <h3 class="sliderTitle">How tight should today’s hug be?</h3>
+          <p class="sliderSub">
+            Slide to choose the kind of hug you need. I’ll match the way I hold you to the way your heart feels.
+          </p>
+
+          <div class="rangeRow">
+            <input type="range" id="hugRange" min="1" max="3" value="2">
+            <div class="levelChip" id="levelChip">Soft</div>
+          </div>
+          <p class="sliderText" id="sliderText"></p>
+        </div>
+      </div>
+
+      <!-- Hug mood buttons -->
+      <div class="card">
+        <div class="cardInner">
+          <h3 class="moodTitle">Which hug do you want right now?</h3>
+          <p class="moodSub">Tap one and imagine me doing exactly this when we finally get our real Hug Day.</p>
+
+          <div class="moodBtns">
+            <button class="moodBtn active" data-type="comfort">Comfort</button>
+            <button class="moodBtn" data-type="proud">I’m proud</button>
+            <button class="moodBtn" data-type="tired">You’re tired</button>
+            <button class="moodBtn" data-type="miss">Missing you</button>
+          </div>
+
+          <div class="moodDisplay">
+            <div class="moodEmoji" id="moodEmoji">🌙</div>
+            <div>
+              <div class="moodTitleText" id="moodTitle">Late‑night comfort hug</div>
+              <p class="moodText" id="moodText">
+                I would pull you into my chest, let you hide your face there and whisper
+                that you do not have to be strong right now. You could just breathe with me
+                until your thoughts get soft and quiet.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      One day this won’t be a screen or a circle to hold down —
+      it will be my real arms around you, after a long day, whispering
+      that <span>you finally made it home</span>.
+    </footer>
+  </div>
+
+  <script>
+    // ===== Hold-to-hug logic =====
+    const hugCircle   = document.getElementById("hugCircle");
+    const hugEmoji    = document.getElementById("hugEmoji");
+    const meterFill   = document.getElementById("meterFill");
+    const hugStatus   = document.getElementById("hugStatus");
+    const hugCountEl  = document.getElementById("hugCount");
+
+    let hugTimer = null;
+    let hugProgress = 0;
+
+    let hugCount = parseInt(localStorage.getItem("hugDayHugs") || "0", 10);
+    updateHugCount();
+
+    function updateHugCount(){
+      if(hugCount === 0){
+        hugCountEl.textContent =
+          "You haven’t collected any hugs from me here yet. Press and hold to claim the very first one.";
+      }else if(hugCount === 1){
+        hugCountEl.textContent =
+          "You’ve already collected 1 hug from me on this page. There are infinite more waiting.";
+      }else{
+        hugCountEl.textContent =
+          `You’ve collected ${hugCount} hugs from me here so far. I promise I’ll never run out.`;
+      }
+    }
+
+    function spawnHearts(n){
+      for(let i=0;i<n;i++){
+        const span = document.createElement("span");
+        span.textContent = ["💗","💖","💕","💝","💞","🤗"][Math.floor(Math.random()*6)];
+        span.style.position="fixed";
+        span.style.left=(50+(Math.random()*40-20))+"vw";
+        span.style.bottom="4vh";
+        span.style.fontSize=(30+Math.random()*26)+"px";
+        span.style.opacity="0";
+        span.style.pointerEvents="none";
+        span.style.transition="transform 3.1s cubic-bezier(.25,.46,.45,.94),opacity 3.1s ease-out";
+        span.style.zIndex="9999";
+        span.style.filter="drop-shadow(0 0 16px rgba(255,122,158,0.85))";
+        document.body.appendChild(span);
+        requestAnimationFrame(()=>{
+          span.style.opacity="1";
+          span.style.transform=`translateY(-320px) translateX(${(Math.random()*160-80)}px) rotate(${Math.random()*120-60}deg) scale(${0.8+Math.random()*0.6})`;
+        });
+        setTimeout(()=>span.remove(),3200);
+      }
+    }
+
+    function startHug(ev){
+      if(hugTimer) return;
+      hugStatus.textContent = "";
+      hugProgress = 0;
+      meterFill.style.width = "0%";
+      hugEmoji.style.transform = "scale(1.12)";
+
+      // ripple inside circle
+      const rect = hugCircle.getBoundingClientRect();
+      const cx = (ev.clientX || (ev.touches && ev.touches[0].clientX)) - rect.left;
+      const cy = (ev.clientY || (ev.touches && ev.touches[0].clientY)) - rect.top;
+      const ripple = document.createElement("span");
+      ripple.style.position="absolute";
+      ripple.style.borderRadius="50%";
+      ripple.style.background="rgba(255,255,255,.7)";
+      ripple.style.left = (cx-15)+"px";
+      ripple.style.top  = (cy-15)+"px";
+      ripple.style.width=ripple.style.height="30px";
+      ripple.style.transform="scale(0)";
+      ripple.style.opacity="0.8";
+      ripple.style.pointerEvents="none";
+      ripple.style.transition="transform .7s ease-out, opacity .7s ease-out";
+      hugCircle.appendChild(ripple);
+      requestAnimationFrame(()=>{
+        ripple.style.transform="scale(4)";
+        ripple.style.opacity="0";
+      });
+      setTimeout(()=>ripple.remove(),700);
+
+      hugTimer = setInterval(()=>{
+        hugProgress += 3;
+        if(hugProgress >= 100){
+          hugProgress = 100;
+          clearInterval(hugTimer);
+          hugTimer = null;
+          hugEmoji.textContent = "🫂";
+          hugEmoji.style.transform = "scale(1.18)";
+          meterFill.style.width = "100%";
+          hugStatus.textContent =
+            "If you felt even a little bit safer just now, that is exactly how I want my real hug to feel for you.";
+          spawnHearts(18);
+
+          hugCount += 1;
+          localStorage.setItem("hugDayHugs", String(hugCount));
+          updateHugCount();
+
+          setTimeout(()=>{hugEmoji.style.transform="scale(1)";},500);
+        }else{
+          meterFill.style.width = hugProgress + "%";
+        }
+      },80);
+    }
+
+    function endHug(){
+      if(!hugTimer) return;
+      clearInterval(hugTimer);
+      hugTimer = null;
+      hugEmoji.textContent = "🤍";
+      hugEmoji.style.transform = "scale(1)";
+      hugProgress = Math.max(0, hugProgress - 20);
+      meterFill.style.width = hugProgress + "%";
+      if(hugProgress < 100){
+        hugStatus.textContent =
+          "I’m still right here on this page, ready to hold you again the second your heart asks for it.";
+      }
+    }
+
+    hugCircle.addEventListener("mousedown",startHug);
+    document.addEventListener("mouseup",endHug);
+    hugCircle.addEventListener("mouseleave",endHug);
+
+    hugCircle.addEventListener("touchstart",e=>{
+      e.preventDefault();
+      startHug(e);
+    },{passive:false});
+    document.addEventListener("touchend",endHug);
+
+    // ===== Slider: hug intensity =====
+    const hugRange  = document.getElementById("hugRange");
+    const levelChip = document.getElementById("levelChip");
+    const sliderText= document.getElementById("sliderText");
+
+    function updateSlider(){
+      const v = parseInt(hugRange.value,10);
+      if(v === 1){
+        levelChip.textContent = "Feather";
+        sliderText.textContent =
+          "I would hug you so softly that you barely feel the pressure — just enough to say ‘I’m here’ without asking your tired body for anything more.";
+      }else if(v === 2){
+        levelChip.textContent = "Soft";
+        sliderText.textContent =
+          "I would wrap my arms around you and hold you long enough for your shoulders to drop and your lungs to remember what a deep, easy breath feels like.";
+      }else{
+        levelChip.textContent = "Tight";
+        sliderText.textContent =
+          "I would pull you in as close as I can, like I am trying to erase every kilometre and every wait, and I would not let go until you feel completely chosen.";
+      }
+    }
+    hugRange.addEventListener("input",()=>{
+      updateSlider();
+      spawnHearts(4);
+    });
+    updateSlider();
+
+    // ===== Mood chooser =====
+    const moodData = {
+      comfort:{
+        emoji:"🌙",
+        title:"Late‑night comfort hug",
+        text:"I would hold you against my chest, talk slowly and softly, and let you pour everything out until your thoughts feel lighter and your heart remembers it is not alone."
+      },
+      proud:{
+        emoji:"🏅",
+        title:"I’m so proud of you hug",
+        text:"I would hug you with a little bounce in it, tell you how seriously I take your dreams, and make sure you feel how proud I am of the person you are becoming."
+      },
+      tired:{
+        emoji:"😴",
+        title:"You’re tired, come here hug",
+        text:"I would tuck you under my chin, sway just a little, and let you borrow my strength until your body stops fighting the exhaustion and finally lets itself rest."
+      },
+      miss:{
+        emoji:"📍",
+        title:"I miss you so much hug",
+        text:"I would hold you like time has stopped, memorising the shape of you in my arms and silently promising that no distance and no delay can change the way I choose you."
+      }
+    };
+
+    const moodBtns   = document.querySelectorAll(".moodBtn");
+    const moodEmoji  = document.getElementById("moodEmoji");
+    const moodTitle  = document.getElementById("moodTitle");
+    const moodText   = document.getElementById("moodText");
+
+    moodBtns.forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        moodBtns.forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        const type = btn.dataset.type;
+        const d = moodData[type];
+        if(!d) return;
+        moodEmoji.textContent = d.emoji;
+        moodEmoji.style.transform = "scale(1.15)";
+        setTimeout(()=>{moodEmoji.style.transform="scale(1)";},220);
+        moodTitle.textContent = d.title;
+        moodText.textContent  = d.text;
+        spawnHearts(5);
+      });
+    });
+  </script>
+</body>
+</html>
